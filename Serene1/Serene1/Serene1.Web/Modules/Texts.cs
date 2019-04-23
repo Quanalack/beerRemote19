@@ -92,7 +92,7 @@ namespace Serene1
         public static class Navigation
         {
             public static LocalText LogoutLink = "Logout";
-            public static LocalText SiteTitle = "Serene1";
+            public static LocalText SiteTitle = "Beer Remote Production";
         }
 
         public static class Site
