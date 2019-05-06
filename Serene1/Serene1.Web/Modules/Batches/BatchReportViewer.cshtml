@@ -1,0 +1,374 @@
+﻿@{
+    ViewData["Title"] = "BatchReportViewer";
+}
+
+@section Head {
+    <link rel="stylesheet" href="~/Scripts/jvectormap/jquery-jvectormap-1.2.2.css">
+    <script src="~/Scripts/sparkline/jquery.sparkline.min.js"></script>
+    <script src="~/Scripts/jvectormap/jquery-jvectormap-1.2.2.min.js"></script>
+    <script src="~/Scripts/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
+    <script src="~/Scripts/chartjs/Chart.min.js"></script>
+    @*<script src="~/Scripts/adminlte/pages/dashboard2.js"></script>*@
+    <script src="~/Scripts/adminlte/demo.js"></script>
+    <script src="~/Scripts/plot.ly/plotly-latest.min.js"></script>
+}
+
+@section ContentHeader {
+    <h1>@ViewData["Title"]</h1>
+}
+
+
+
+<div class="row">
+    <div class="col-md-4 col-sm-6 col-xs-12">
+        <div class="info-box">
+            <span class="info-box-icon bg-aqua">
+                <i>
+                    <img class="match-block" src="~/Content/beerAssets/package.svg" />
+                </i>
+            </span>
+            <div class="info-box-content">
+                <span class="info-box-text">Batch Id</span>
+
+                <span id="BatchID" class="info-box-number"> @ViewData["batchID"] </span>
+            </div><!-- /.info-box-content -->
+        </div><!-- /.info-box -->
+    </div><!-- /.col -->
+    <div class="col-md-4 col-sm-6 col-xs-12">
+        <div class="info-box">
+            <span class="info-box-icon bg-gray"><i><img class="match-block" src="~/Content/beerAssets/beertap.svg" /> </i></span>
+            <div class="info-box-content">
+                <span class="info-box-text">Amount to Produce</span>
+                <span id="ProductAmount" class="info-box-number"></span>
+            </div><!-- /.info-box-content -->
+        </div><!-- /.info-box -->
+    </div><!-- /.col -->
+    <!-- fix for small devices only -->
+    <div class="clearfix visible-sm-block"></div>
+    <div class="col-md-4 col-sm-6 col-xs-12">
+        <div class="info-box">
+            <span class="info-box-icon bg-green"><i><img class="match-block" src="~/Content/beerAssets/speedometer.svg" /></i></span>
+            <div class="info-box-content">
+                <span class="info-box-text">Speed</span>
+                <span id="machinespeed" class="info-box-number"></span>
+            </div><!-- /.info-box-content -->
+        </div><!-- /.info-box -->
+    </div><!-- /.col -->
+</div><!-- /.row -->
+
+<div class="row">
+    <div class="col-md-4 col-sm-6 col-xs-12">
+        <div class="info-box">
+            <span class="info-box-icon bg-gray">
+                <i>
+                    <img class="match-block" src="~/Content/beerAssets/beer.svg" />
+                </i>
+            </span>
+            <div class="info-box-content">
+                <span class="info-box-text">Produced</span>
+                <span id="produced" class="info-box-number"></span>
+            </div><!-- /.info-box-content -->
+        </div><!-- /.info-box -->
+    </div><!-- /.col -->
+    <div class="col-md-4 col-sm-6 col-xs-12">
+        <div class="info-box">
+            <span class="info-box-icon bg-green"><i><img style="display: block; margin-left: auto; margin-top: 10%; margin-right: auto; height:72px; width: auto; vertical-align: middle;" src="~/Content/beerAssets/beer.svg" /> </i></span>
+            <div class="info-box-content">
+                <span class="info-box-text">Acceptable Amount Produced</span>
+                <span id="acceptableAmountProduced" class="info-box-number"></span>
+            </div><!-- /.info-box-content -->
+        </div><!-- /.info-box -->
+    </div><!-- /.col -->
+    <!-- fix for small devices only -->
+    <div class="clearfix visible-sm-block"></div>
+    <div class="col-md-4 col-sm-6 col-xs-12">
+        <div class="info-box">
+            <span class="info-box-icon bg-red"><i><img style="display: block;margin-left: auto;margin-top: 10%;margin-right: auto;height:72px; width: auto; vertical-align: middle;" src="~/Content/beerAssets/beer.svg" /></i></span>
+            <div class="info-box-content">
+                <span class="info-box-text">Unacceptable Amount Produced</span>
+                <span id="unacceptableAmountProduced" class="info-box-number"></span>
+            </div><!-- /.info-box-content -->
+        </div><!-- /.info-box -->
+    </div><!-- /.col -->
+</div><!-- /.row -->
+
+<div class="row">
+    <div class="col-md-4 col-sm-6 col-xs-12">
+        <div class="info-box">
+            <span class="info-box-icon bg-red">
+                <i>
+                    <img class="match-block" src="~/Content/beerAssets/beer.svg" />
+                </i>
+            </span>
+            <div class="info-box-content">
+                <span class="info-box-text">Type</span>
+                <span id="type" class="info-box-number"></span>
+            </div><!-- /.info-box-content -->
+        </div><!-- /.info-box -->
+    </div><!-- /.col -->
+    <div class="col-md-4 col-sm-6 col-xs-12">
+        <div class="info-box">
+            <span class="info-box-icon bg-white">
+                <i>
+                    <img class="match-block" src="~/Content/beerAssets/OEE.svg" />
+                </i>
+            </span>
+            <div class="info-box-content">
+                <span class="info-box-text">OEE Score</span>
+                <span id="oee" class="info-box-number"></span>
+            </div><!-- /.info-box-content -->
+        </div><!-- /.info-box -->
+    </div><!-- /.col -->
+    <div class="col-md-4 col-sm-6 col-xs-12">
+        <div class="info-box">
+            <span style="font-size: 64px" class="info-box-icon bg-white">
+                <i>
+                    <img style="padding: 10px" class="match-block" src="~/Content/beerAssets/hand-paper-solid.svg" />
+                </i>
+            </span>
+            <div class="info-box-content">
+                <span class="info-box-text">Stop Reason</span>
+                <span id="StopReason" class="info-box-number"></span>
+            </div><!-- /.info-box-content -->
+        </div><!-- /.info-box -->
+    </div><!-- /.col -->
+</div><!-- /.row -->
+<div class="row">
+    <div class="col-md-4 col-sm-6 col-xs-12">
+        <div class="info-box">
+            <span style="font-size: 64px;" class="info-box-icon bg-green">
+                <i>
+                    <img class="match-block" src="~/Content/beerAssets/clock-regular.svg" />
+                </i>
+            </span>
+            <div class="info-box-content">
+                <span class="info-box-text">Start Time</span>
+                <span id="startTime" class="info-box-number"></span>
+            </div><!-- /.info-box-content -->
+        </div><!-- /.info-box -->
+    </div><!-- /.col -->
+    <div class="col-md-4 col-sm-6 col-xs-12">
+        <div class="info-box">
+            <span class="info-box-icon bg-yellow">
+                <i>
+                    <img style="padding: 10px" class="match-block" src="~/Content/beerAssets/stopwatch-solid.svg"/>
+                </i>
+            </span>
+            <div class="info-box-content">
+                <span class="info-box-text">Time Taken</span>
+                <span id="timeSpan" class="info-box-number"></span>
+            </div><!-- /.info-box-content -->
+        </div><!-- /.info-box -->
+    </div><!-- /.col -->
+    <div class="col-md-4 col-sm-6 col-xs-12">
+        <div class="info-box">
+            <span class="info-box-icon bg-red">
+                <i>
+                    <img class="match-block" src="~/Content/beerAssets/clock-regular.svg" />
+                </i>
+            </span>
+            <div class="info-box-content">
+                <span class="info-box-text">Stop Time</span>
+                <span id="stopTime" class="info-box-number"></span>
+            </div><!-- /.info-box-content -->
+        </div><!-- /.info-box -->
+    </div><!-- /.col -->
+</div>
+
+    <!-- Main row -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="box">
+            <div class="box-header with-border">
+                <h3 class="box-title">Temperature, Humidity & Vibration during production</h3>
+                <div class="box-tools pull-right">
+                    <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                    <div class="btn-group">
+                        <button class="btn btn-box-tool dropdown-toggle" data-toggle="dropdown"><i class="fa fa-wrench"></i></button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="#">Action</a></li>
+                            <li><a href="#">Another action</a></li>
+                            <li><a href="#">Something else here</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#">Separated link</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div><!-- /.box-header -->
+            <div class="box-body">
+                <div class="row">
+                    <div class="col-md-12">
+
+                        <!-- Sales Chart Canvas -->
+                        <div id="plotChart"></div>
+                    </div><!-- /.col -->
+
+                </div><!-- ./box-body -->
+
+            </div><!-- /.box -->
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+    <style>
+        .match-block {
+            display: block;
+            margin-left: auto;
+            margin-top: 10%;
+            margin-right: auto;
+            width: 80%;
+            vertical-align: middle;
+        }
+    </style>
+
+<script src="~/Scripts/moment-with-locales.min.js"></script>
+<script src="~/Scripts/daterangepicker/moment-precise-range.js"></script>
+
+    <script type="text/javascript">
+    Plotly.d3.csv("https://raw.githubusercontent.com/plotly/datasets/master/finance-charts-apple.csv", function (err, rows) {
+
+        function unpack(rows, key) {
+            return rows.map(function (row) { return row[key]; });
+        }
+
+
+        var trace1 = {
+            type: "scatter",
+            mode: "lines",
+            name: 'AAPL High',
+            x: unpack(rows, 'Date'),
+            y: unpack(rows, 'AAPL.High'),
+            line: { color: '#17BECF' }
+        }
+
+        var trace2 = {
+            type: "scatter",
+            mode: "lines",
+            name: 'AAPL Low',
+            x: unpack(rows, 'Date'),
+            y: unpack(rows, 'AAPL.Low'),
+            line: { color: '#7F7F7F' }
+        }
+
+
+        var data = [trace1, trace2];
+
+        var layout = {
+            margin: {
+                l: 50,
+                r: 50,
+                b: 50,
+                t: 50,
+                pad: 1
+            },
+
+            xaxis: {
+                autorange: true,
+                range: ['2015-02-17', '2017-02-16'],
+                rangeselector: {
+                    buttons: [
+                        {
+                            count: 1,
+                            label: '1m',
+                            step: 'month',
+                            stepmode: 'backward'
+                        },
+                        {
+                            count: 6,
+                            label: '6m',
+                            step: 'month',
+                            stepmode: 'backward'
+                        },
+                        { step: 'all' }
+                    ]
+                },
+                rangeslider: { range: ['2015-02-17', '2017-02-16'] },
+                type: 'date'
+            },
+            yaxis: {
+                autorange: true,
+                range: [86.8700008333, 138.870004167],
+                type: 'linear'
+            }
+        };
+
+        Plotly.newPlot('plotChart', data, layout);
+    })
+    $(document).ready(function () {
+        var beerType = "Null";
+        var stopReason = "Batch was completed";
+        $.ajax({
+            url: "/BatchReporter/GetBatch",
+            data: {"batchId" : @ViewData["batchID"] },
+            success: function (data) {
+                $('#BatchID').text(data.batch.ID);
+                $('#ProductAmount').text(data.batch.AmountToProduce);
+                $('#machinespeed').text(data.batch.Speed);
+                $('#produced').text(data.batch.AmountProduced);
+                $('#acceptableAmountProduced').text(data.batch.AcceptableAmount);
+                $('#unacceptableAmountProduced').text(data.batch.AmountProduced - data.batch.AcceptableAmount);
+                switch (data.batch.BeerType) {
+                    case 0:
+                        beerType = "Pilsner";
+                        break;
+                    case 1:
+                        beerType = "Wheat";
+                        break;
+                    case 2:
+                        beerType = "IPA";
+                        break;
+                    case 3:
+                        beerType = "Stout";
+                        break;
+                    case 4:
+                        beerType = "Ale";
+                        break;
+                    case 5:
+                        beerType = "Alcohol Free";
+                        break;
+                }
+                if (data.batch.StopReason != null) {
+                    switch (data.batch.stopReason) {
+                    case 10:
+                            stopReason = "Empty Inventory";
+                        break;
+                    case 11:
+                            stopReason = "Maintenance";
+                        break;
+                    case 12:
+                            stopReason = "Manual Stop";
+                        break;
+                    case 13:
+                            stopReason = "Motor Power loss";
+                        break;
+                    case 14:
+                            stopReason = "Manual Abort";
+                        break;
+                    }
+                }
+                $('#type').text(beerType);
+                $('#oee').text(data.batch.OEE + '%');
+                $('#StopReason').text(stopReason);
+                var startTime = "Null";
+                startTime = moment(new Date(parseInt((data.batch.startDateTime).replace(/\/Date\((-?\d+)\)\//, '$1')))).format("MMMM Do YYYY, H:mm:ss");
+                $('#startTime').text(startTime);
+
+                var stopTime = "This Batch is still running.";
+                if (data.batch.stopDateTime != null)
+                {
+                    stopTime = moment(new Date(parseInt((data.batch.stopDateTime).replace(/\/Date\((-?\d+)\)\//, '$1')))).format("MMMM Do YYYY, H:mm:ss");
+                }
+                $('#stopTime').text(stopTime);
+
+                var timeSpan = "Null";
+                if (data.batch.TimeTaken != null) {
+                    timeSpan = moment(data.batch.startDateTime).preciseDiff(moment(data.batch.stopDateTime));
+                }
+                $('#timeSpan').text(timeSpan);
+
+            }
+
+        });
+    } );
+
+
+
+    </script>

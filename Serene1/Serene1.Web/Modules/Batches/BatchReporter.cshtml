@@ -1,0 +1,102 @@
+﻿@{
+    ViewData["Title"] = "BatchStarter";
+}
+
+@section Head {
+    <link rel="stylesheet" type="text/css" href="/DataTables/datatables.css">
+
+    <script type="text/javascript" charset="utf8" src="/DataTables/datatables.js"></script>
+}
+
+@section ContentHeader {
+    <h1>@ViewData["Title"]</h1>
+}
+
+<!-- Info boxes -->
+
+
+
+<div class="row">
+    <div class="col-md-12">
+        <table id="table_id" class="display" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Batch ID</th>
+                    <th>Start Time</th>
+                    <th>Stop Time</th>
+                    <th>Link</th>
+                </tr>
+            </thead>
+            <tfoot>
+                <tr>
+                    <th>Batch ID</th>
+                    <th>Start Time</th>
+                    <th>Stop Time</th>
+                    <th>Link</th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+
+<!-- Main row -->
+
+<style>
+</style>
+<script src="~/Scripts/moment-with-locales.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $.ajax({
+            url: "/BatchReporter/GetAllBatches",
+            data: {},
+            success: function (data) {
+
+                $('#table_id').DataTable({
+                    data: data.batches,
+                    "columns": [
+                        { "data": "Id" },
+                        {
+                            "data": "startDateTime",
+                            "render": function (data, type, row, meta) {
+                                if (type === 'display') {
+
+                                    data = moment(new Date(parseInt((data).replace(/\/Date\((-?\d+)\)\//, '$1')))).format("MMMM Do YYYY, H:mm:ss");
+                                }
+                                return data;
+                            }
+                        },
+                        {
+                            "data": "stopDateTime",
+                            "render": function (data, type, row, meta) {
+                                if (type === 'display' && data != null) {
+
+                                    data = moment(new Date(parseInt((data).replace(/\/Date\((-?\d+)\)\//, '$1'))))
+                                        .format("MMMM Do YYYY, H:mm:ss");
+                                } else {
+                                    data = "Has no Stop Time"
+                                }
+                                return data;
+                            } },
+                        {
+                            "data": "Id",
+                            "render": function (data, type, row, meta) {
+                                if (type === 'display') {
+                                    data = '<a href="../BatchReporter/BatchReportViewer?batchID=' +
+                                        data +
+                                        '">See Batch ' +
+                                        data +
+                                        '</a>';
+                                }
+
+                                return data;
+                            }
+                        }
+                    ]
+                });
+
+            }
+        });
+    });
+</script>

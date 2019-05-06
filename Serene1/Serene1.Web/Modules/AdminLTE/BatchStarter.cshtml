@@ -1,0 +1,176 @@
+﻿@{
+    ViewData["Title"] = "BatchStarter";
+}
+
+@section Head {
+    <link rel="stylesheet" href="~/Scripts/jvectormap/jquery-jvectormap-1.2.2.css">
+    <script src="~/Scripts/sparkline/jquery.sparkline.min.js"></script>
+    <script src="~/Scripts/jvectormap/jquery-jvectormap-1.2.2.min.js"></script>
+    <script src="~/Scripts/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
+    <script src="~/Scripts/chartjs/Chart.min.js"></script>
+    <script src="~/Scripts/adminlte/pages/dashboard2.js"></script>
+    <script src="~/Scripts/adminlte/demo.js"></script>
+}
+
+@section ContentHeader {
+    <h1>@ViewData["Title"]</h1>
+}
+
+<!-- Info boxes -->
+
+
+
+<div class="row">
+    <div class="col-md-6">
+        <!--Venstre Kolonne-->
+        <div class="row" style="padding-bottom: 15px">
+            <div class="col-md-4 col-sm-6 col-xs-12">
+                <button id="sendBtn" class="btn btn-block btn-primary btn-lg">Send</button>
+            </div>
+
+            <div class="col-md-4 col-sm-6 col-xs-12">
+                <button id="clearBtn" class="btn btn-block btn-info btn-lg">Clear</button>
+            </div>
+            <div>
+                <span class="col-md-4 info-box-content bg-gray" style="font-size: 180%; margin-left: 0; height: 46px;"> State: </span>
+            </div>
+        </div>
+        <div class="box box-danger">
+            <div class="box-header with-border">
+                <h3 class="box-title">Next Batch</h3>
+            </div>
+            <div class="box-body">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>Type:</label>
+                        <select id="beerSelector" class="form-control select2" style="width: 100%;">
+                            <option beer-data=0 selected="selected">Pilsner</option>
+                            <option beer-data=1 >Wheat</option>
+                            <option beer-data=2>IPA</option>
+                            <option beer-data=3>Stout</option>
+                            <option beer-data=4>Ale</option>
+                            <option beer-data=5>Alcohol Free</option>
+                        </select>
+                    </div><!-- /.form-group -->
+                </div><!-- /.col -->
+                <div class="col-md-4">
+                    <label>Mængde(0-65535):</label>
+                    <div class="col">
+                        <input id="amtSet" type="number" min="0" max="65535" class="form-control" placeholder="10000">
+                    </div>
+                </div><!-- /.col -->
+                <div class="col-md-4">
+                    <label>Batch ID:</label>
+                    <div class="col">
+                        <input id="batchID" type="number" class="form-control" value="25" disabled="">
+                    </div>
+                </div><!-- /.col -->
+            </div>
+        </div><!-- /.box-body -->
+    </div>
+    <div class="col-md-6">
+        <!--Højre Kolonne-->
+        <div class="info-box">
+            <span class="info-box-icon bg-green">
+                <i>
+                    <img class="match-block" src="~/Content/beerAssets/beer.svg" />
+                </i>
+            </span>
+            <div class="info-box-content">
+                <span class="info-box-text">Amount Left of Current Batch</span>
+                <span class="info-box-number" id="nextLeft">537</span>
+            </div>
+        </div>
+        <div class="info-box">
+            <span class="info-box-icon bg-yellow">
+                <i>
+                    <img class="match-block" src="~/Content/beerAssets/wheat.svg" />
+                </i>
+            </span>
+            <div class="info-box-content">
+                <span class="info-box-text">Beer Type for next batch</span>
+                <span class="info-box-number" id="nextType">Pilsner</span>
+            </div>
+        </div>
+        <div class="info-box">
+            <span class="info-box-icon bg-aqua">
+                <i>
+                    <img class="match-block" src="~/Content/beerAssets/beertap.svg" />
+                </i>
+            </span>
+            <div class="info-box-content">
+                <span class="info-box-text">Beer amount for next batch</span>
+                <span class="info-box-number" id="nextAmt">10000</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Main row -->
+
+<style>
+    .match-block {
+        display: block;
+        margin-left: auto;
+        margin-top: 10%;
+        margin-right: auto;
+        width: 80%;
+        vertical-align: middle;
+    }
+</style>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        setInterval(getState, 500);
+        setinterval(getProductionLeft, 500)
+    });
+
+    function getState() {
+        $.ajax({
+            url: "/AdminLTE/GetProduced",
+            data: {},
+            success: function (data) {
+                $("#produced").text(data.produced);
+            }
+        });
+    }
+
+    function getProductionLeft() {
+        $.ajax({
+            url: "/AdminLTE/GetProduced",
+            data: {},
+            success: function (data) {
+                $("#produced").text(data.produced);
+            }
+        });
+    }
+
+    $("#sendBtn").click(function () {
+        var amt = parseInt($("#amtSet").val());
+        var beerType = parseInt($("#beerSelector").find(":selected").attr("beer-data"));
+        var beerTypeName = $("#beerSelector").val();
+        var batchID = parseInt($("#batchID").val());
+        $.ajax({
+            url: "/AdminLTE/SendBtnClick",
+            data: { name: amt, name2: beerType, name:batchID },
+            success: function (data) {
+                toastr.success("Batch Information has been send.")
+                $("#nextAmt").text(amt);
+                $("#nextType").text(beerTypeName);
+            },
+            error: function(data) {
+                toastr.error("An error happened.")
+            }
+        });
+    });
+
+    $("#clearBtn").click(function () {
+        $("#beerSelector").val("Pilsner");
+        $("#amtSet").val(null);
+    });
+
+    
+
+</script>

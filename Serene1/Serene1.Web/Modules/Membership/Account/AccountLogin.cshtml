@@ -1,0 +1,253 @@
+﻿@{
+    ViewData["Title"] = "Login";
+    ViewData["PageId"] = "Login";
+    Layout = MVC.Views.Shared._LayoutSlim;
+}
+
+@section Head {
+    @Html.Script("~/Scripts/vegas/vegas.js")
+    <script type="text/javascript">@Html.Raw(DynamicScriptManager.GetScriptText("Form.Membership.Login"))</script>
+    <script type="text/javascript">@Html.Raw(Html.GetLocalTextContent("Login"))</script>
+    @Html.Stylesheet("~/Scripts/vegas/vegas.css")
+
+    <style type="text/css">
+        body {
+          font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+          font-size: 13px;
+          color: #000;
+          -ms-overflow-style: scrollbar;
+        }
+
+        #LoginPanel {
+            padding: 30px 20px;
+            width: 550px;
+            margin: 90px auto auto auto;
+            background: rgba(0,0,0,0.5);
+            border-radius: 12px;
+            font-weight: 700;
+        }
+
+        #LoginPanel .caption {
+            width: 180px;
+        }
+
+       #LoginPanel .logo {
+            margin: 0 auto 20px auto;
+            width: 128px;
+            height: 128px;
+            background: url(../../../Content/site/images/serenity-logo-w-128.png) transparent no-repeat center center;
+        }
+
+       #LoginPanel h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin: 16px 0 24px;
+            color: #f5f27e;
+            text-align: center;
+            text-shadow: 0 1px 1px #333;
+        }
+
+       #LoginPanel .buttons {
+            text-align: right;
+            padding: 8px 0 4px 0;
+            margin-right: 28px;
+        }
+
+        #LoginPanel .btn {
+                padding: 8px 24px;
+                font-weight: 700;
+        }
+
+       #LoginPanel .caption {
+            color: #ececec;
+            font-weight: 700;
+            text-shadow: 0 1px 1px #333;
+        }
+
+       #LoginPanel .actions {
+            padding-right: 28px;
+        }
+
+        #LoginPanel .actions a {
+            color: #ececec;
+            padding: 2px 2px 2px 2px;
+            margin-top: 5px;
+            display: block;
+            float: right;
+            clear: both;
+            border-bottom: 1px dashed #999;
+            text-shadow: 0 1px 1px #333;
+        }
+
+        #LoginPanel .actions a i {
+            font-weight: 700;
+            margin-right: 4px;
+        }
+
+        #LoginPanel .s-Form label.error {
+            background-image: url(@Url.Content("~/Content/serenity/images/cross.png"));
+            padding: 26px 0 0 22px;
+        }
+
+        #LoginPanel .s-Form label.error.checked {
+            background-image: none;
+        }
+
+        #LoginPanel .s-Form .field {
+            padding: 8px;
+        }
+
+        #LoginPanel .s-Form input {
+            padding: 6px 10px;
+            border: none;
+            background: rgba(0, 0, 0, 0.6);
+            color: #fff;
+        }
+
+        #LoginPanel .s-Form .caption {
+            padding: 6px 10px;
+            color: #fff;
+        }
+
+        #LoginPanel a {
+            color: aqua;
+        }
+
+        #LoginPanel .s-PropertyGrid .categories {
+            height: auto;
+        }
+
+        #LoginPanel .flex-layout .s-PropertyGrid {
+            display: block;
+        }
+
+        @@media(max-width: 550px), (max-height: 500px) {
+            #LoginPanel {
+                padding: 16px 4px 16px 4px;
+                position: absolute;
+                margin: 0;
+                width: auto;
+                top: 10px;
+                left: 10px;
+                right: 10px;
+            }
+        }
+    </style>
+}
+
+<script id="Template_LoginPanel" type="text/template">
+<div class="flex-layout">
+    <div class="logo"></div>
+    <h3>@Texts.Forms.Membership.Login.FormTitle</h3>
+    <form id="~_Form" action="">
+        <div class="s-Form">
+            <div class="fieldset ui-widget ui-widget-content ui-corner-all">
+                <div id="~_PropertyGrid"></div>
+                <div class="clear"></div>
+            </div>
+            <div class="buttons">
+                <button id="LoginButton" type="submit" class="btn btn-primary">
+                    @Texts.Forms.Membership.Login.SignInButton
+                </button>
+            </div>
+            <div class="actions">
+                <a href="@Url.Content("~/Account/ForgotPassword")"><i class="fa fa-angle-right"></i>&nbsp;@Texts.Forms.Membership.Login.ForgotPassword</a>
+                <a href="@Url.Content("~/Account/SignUp")"><i class="fa fa-angle-right"></i>&nbsp;@Texts.Forms.Membership.Login.SignUpButton</a>
+                <div class="clear"></div>
+            </div>
+        </div>
+    </form>
+</div>
+</script>
+
+@if (SiteInitialization.SkippedMigrations)
+{
+<div class="alert alert-error alert-dismissible">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <h4><i class="icon fa fa-warning"></i> Warning!</h4>
+    Serene1 skipped running migrations to avoid modifying an arbitrary database.
+    If you'd like to run migrations on this database, remove the safety check 
+    in SiteInitialization.RunMigrations method.
+</div>
+}
+
+@if (ViewData["Activated"] != null)
+{
+<div class="alert alert-info alert-dismissible">
+    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+    <h4><i class="icon fa fa-info"></i>@LocalText.Get("Dialogs.InformationTitle")</h4>
+    @Texts.Forms.Membership.SignUp.ActivationCompleteMessage
+</div>
+}
+
+<div class="page-content">
+    <div id="LoginPanel">
+
+    </div>
+</div>
+
+<script type="text/javascript">
+
+var LoginPanel = (function (_super) {
+    __extends(LoginPanel, _super);
+    function LoginPanel(container) {
+        var _this = _super.call(this, container) || this;
+        $(function () {
+            $('body').vegas({
+                delay: 30000,
+                cover: true,
+                overlay: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACAQMAAABIeJ9nAAAAA3NCSVQICAjb4U" +
+                    "/gAAAABlBMVEX///8AAABVwtN+AAAAAnRSTlMA/1uRIrUAAAAJcEhZcwAAAsQAAALEAVuRnQsAAAAWdEVYdENyZWF0" +
+                    "aW9uIFRpbWUAMDQvMTMvMTGrW0T6AAAAHHRFWHRTb2Z0d2FyZQBBZG9iZSBGaXJld29ya3MgQ1M1cbXjNgAAAAxJREFUCJljaGBgAAABhACBrONIPgAAAABJRU5ErkJggg==",
+                slides: [
+                    { src: @Html.Raw(ContentHashCache.ResolveWithHash("~/Content/site/slides/slide1.jpg").ToJson()), transition: 'fade' },
+                    { src: @Html.Raw(ContentHashCache.ResolveWithHash("~/Content/site/slides/slide2.jpg").ToJson()), transition: 'zoomOut' },
+                    { src: @Html.Raw(ContentHashCache.ResolveWithHash("~/Content/site/slides/slide3.jpg").ToJson()), transition: 'swirlLeft' }
+                ]
+            });
+            $('#LoginButton').click(function (e) {
+                e.preventDefault();
+                if (!_this.validateForm()) {
+                    return;
+                }
+                var request = _this.getSaveEntity();
+                Q.serviceCall({
+                    url: Q.resolveUrl('~/Account/Login'),
+                    request: request,
+                    onSuccess: function (response) {
+                        var q = Q.parseQueryString();
+                        var returnUrl = q['returnUrl'] || q['ReturnUrl'];
+                        if (returnUrl) {
+                            var hash = window.location.hash;
+                            if (hash != null && hash != '#')
+                                returnUrl += hash;
+                            window.location.href = returnUrl;
+                        }
+                        else {
+                            window.location.href = Q.resolveUrl('~/');
+                        }
+                    }
+                });
+            });
+        });
+        return _this;
+    }
+    LoginPanel.prototype.getTemplateName = function () { return 'LoginPanel'; };
+    LoginPanel.prototype.getFormKey = function () { return "Membership.Login"; };
+    return LoginPanel;
+}(Serenity.PropertyPanel));
+
+jQuery(function() {
+    new LoginPanel($('#LoginPanel')).init();
+
+@if (ViewData["Activated"] != null)
+{
+    <text>
+    $(function() { 
+        $('#Username').val(@Html.Raw(Serenity.JSON.Stringify(ViewData["Activated"])));
+        $('#Password').focus();
+    });
+    </text>
+}
+});
+</script>

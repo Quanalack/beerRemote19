@@ -1,0 +1,761 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+}
+
+@section Head {
+    <link rel="stylesheet" href="~/Scripts/jvectormap/jquery-jvectormap-1.2.2.css">
+    <script src="~/Scripts/sparkline/jquery.sparkline.min.js"></script>
+    <script src="~/Scripts/jvectormap/jquery-jvectormap-1.2.2.min.js"></script>
+    <script src="~/Scripts/jvectormap/jquery-jvectormap-world-mill-en.js"></script>
+    <script src="~/Scripts/chartjs/Chart.min.js"></script>
+    @*<script src="~/Scripts/adminlte/pages/dashboard2.js"></script>*@
+    <script src="~/Scripts/adminlte/demo.js"></script>
+    <script src="~/Scripts/plot.ly/plotly-latest.min.js"></script>
+}
+
+@section ContentHeader {
+    <h1>@ViewData["Title"]</h1>
+}
+<!-- Modal -->
+
+<div id="modal" class="modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button id="closeModal" type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">New Batch</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Type:</label>
+                            <select id="beerSelector" class="form-control select2" style="width: 100%;">
+                                <option beer-data=0 selected="selected">Pilsner</option>
+                                <option beer-data=1>Wheat</option>
+                                <option beer-data=2>IPA</option>
+                                <option beer-data=3>Stout</option>
+                                <option beer-data=4>Ale</option>
+                                <option beer-data=5>Alcohol Free</option>
+                            </select>
+                        </div><!-- /.form-group -->
+                    </div><!-- /.col -->
+                    <div class="col-md-4">
+                        <label>Amount(0-65535):</label>
+
+                        <input id="amtSet" type="number" min="0" max="65535" class="form-control" placeholder="10000">
+
+                    </div><!-- /.col -->
+                    <div class="col-md-4">
+                        <label>Speed: Product / min</label>
+
+                        <input id="speed" type="number" class="form-control" value="25" >
+
+                    </div><!-- /.col -->
+                </div>
+                    <div class="modal-footer">
+                        <button id="closeModal"type="button" class="btn btn-default pull-left">Close</button>
+                        <button id="sendData" type="button" class="btn btn-primary">Start</button>
+                    </div>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+<!-- Info boxes -->
+<div class="row" style="padding-bottom: 15px">
+    <div class="col-md-2 col-sm-6 col-xs-12">
+      <span id ="changingBtns"></span>
+    </div>
+    <div class="col-md-2 col-sm-6 col-xs-12">
+        <button id="stopBtn" class="btn btn-block btn-warning btn-lg">Stop</button>
+    </div>
+    <div class="col-md-2 col-sm-6 col-xs-12">
+        <button id="abortBtn" class="btn btn-block btn-danger btn-lg">Abort</button>
+    </div>
+    <div>
+        <span class="col-md-2 info-box-content bg-gray" id="stateShow" style="font-size: 180%; margin-left: 0; height: 46px;"> State:  </span>
+    </div>
+
+</div>
+
+<div class="row">
+    <div class="col-md-4 col-sm-6 col-xs-12">
+        <div class="info-box">
+            <span class="info-box-icon bg-aqua">
+                <i>
+                    <img class="match-block" src="~/Content/beerAssets/package.svg" />
+                </i>
+            </span>
+            <div class="info-box-content">
+                <span class="info-box-text">Batch Id</span>
+
+                <span id="nextBatchID" class="info-box-number"> XX </span>
+            </div><!-- /.info-box-content -->
+        </div><!-- /.info-box -->
+    </div><!-- /.col -->
+    <div class="col-md-4 col-sm-6 col-xs-12">
+        <div class="info-box">
+            <span class="info-box-icon bg-gray"><i><img class="match-block" src="~/Content/beerAssets/beertap.svg" /> </i></span>
+            <div class="info-box-content">
+                <span class="info-box-text">Amount to Produce</span>
+                <span id="nextProductAmount" class="info-box-number">XX</span>
+            </div><!-- /.info-box-content -->
+        </div><!-- /.info-box -->
+    </div><!-- /.col -->
+    <!-- fix for small devices only -->
+    <div class="clearfix visible-sm-block"></div>
+    <div class="col-md-4 col-sm-6 col-xs-12">
+        <div class="info-box">
+            <span class="info-box-icon bg-green"><i><img class="match-block" src="~/Content/beerAssets/speedometer.svg" /></i></span>
+            <div class="info-box-content">
+                <span class="info-box-text">Speed</span>
+                <span id ="machineSpeed" class="info-box-number">XX</span>
+            </div><!-- /.info-box-content -->
+        </div><!-- /.info-box -->
+    </div><!-- /.col -->
+</div><!-- /.row -->
+
+<div class="row">
+    <div class="col-md-4 col-sm-6 col-xs-12">
+        <div class="info-box">
+            <span class="info-box-icon bg-gray">
+                <i>
+                    <img class="match-block" src="~/Content/beerAssets/beer.svg" />
+                </i>
+            </span>
+            <div class="info-box-content">
+                <span class="info-box-text">Produced</span>
+                <span id="produced" class="info-box-number">XX</span>
+            </div><!-- /.info-box-content -->
+        </div><!-- /.info-box -->
+    </div><!-- /.col -->
+    <div class="col-md-4 col-sm-6 col-xs-12">
+        <div class="info-box">
+            <span class="info-box-icon bg-gray"><i><img style="display: block; margin-left: auto; margin-top: 10%; margin-right: auto; height:72px; width: auto; vertical-align: middle;" src="~/Content/beerAssets/accept.svg" /> </i></span>
+            <div class="info-box-content">
+                <span class="info-box-text">Acceptable Amount Produced</span>
+                <span id ="acceptableAmountProduced" class="info-box-number">XX</span>
+            </div><!-- /.info-box-content -->
+        </div><!-- /.info-box -->
+    </div><!-- /.col -->
+    <!-- fix for small devices only -->
+    <div class="clearfix visible-sm-block"></div>
+    <div class="col-md-4 col-sm-6 col-xs-12">
+        <div class="info-box">
+            <span class="info-box-icon bg-bg-gray"><i><img style="display: block;margin-left: auto;margin-top: 10%;margin-right: auto;height:72px; width: auto; vertical-align: middle;" src="~/Content/beerAssets/defect.svg" /></i></span>
+            <div class="info-box-content">
+                <span class="info-box-text">Unacceptable Amount Produced</span>
+                <span id ="unacceptableAmountProduced"class="info-box-number">XX</span>
+            </div><!-- /.info-box-content -->
+        </div><!-- /.info-box -->
+    </div><!-- /.col -->
+</div><!-- /.row -->
+
+<div class="row">
+    <div class="col-md-4 col-sm-6 col-xs-12">
+        <div class="info-box">
+            <span class="info-box-icon bg-red">
+                <i>
+                    <img class="match-block" src="~/Content/beerAssets/thermometer.svg" />
+                </i>
+            </span>
+            <div class="info-box-content">
+                <span class="info-box-text">Temperature</span>
+                <span id ="temperature" class="info-box-number">XX</span>
+            </div><!-- /.info-box-content -->
+        </div><!-- /.info-box -->
+    </div><!-- /.col -->
+    <div class="col-md-4 col-sm-6 col-xs-12">
+        <div class="info-box">
+            <span class="info-box-icon bg-gray"><i><img class="match-block" src="~/Content/beerAssets/humidity.png" /> </i></span>
+            <div class="info-box-content">
+                <span class="info-box-text">Humidity</span>
+                <span id = "humidity" class="info-box-number">XX</span>
+            </div><!-- /.info-box-content -->
+        </div><!-- /.info-box -->
+    </div><!-- /.col -->
+    <!-- fix for small devices only -->
+    <div class="clearfix visible-sm-block"></div>
+    <div class="col-md-4 col-sm-6 col-xs-12">
+        <div class="info-box">
+            <span class="info-box-icon bg-green"><i><img class="match-block" src="~/Content/beerAssets/vibration.svg" /></i></span>
+            <div class="info-box-content">
+                <span class="info-box-text">Vibration</span>
+                <span id ="vibration" class="info-box-number">XX</span>
+            </div><!-- /.info-box-content -->
+        </div><!-- /.info-box -->
+    </div><!-- /.col -->
+</div><!-- /.row -->
+<!-- Main row -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="box">
+            <div class="box-header with-border">
+                <h3 class="box-title">Monthly Recap Report</h3>
+                <div class="box-tools pull-right">
+                    <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                    <div class="btn-group">
+                        <button class="btn btn-box-tool dropdown-toggle" data-toggle="dropdown"><i class="fa fa-wrench"></i></button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="#">Action</a></li>
+                            <li><a href="#">Another action</a></li>
+                            <li><a href="#">Something else here</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#">Separated link</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div><!-- /.box-header -->
+            <div class="box-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <p class="text-center">
+                            <strong>Sales: 1 Jan, 2014 - 30 Jul, 2014</strong>
+                        </p>
+                        <!-- Sales Chart Canvas -->
+                        <div id="plotChart"></div>
+                    </div><!-- /.col -->
+                    <div class="col-md-4">
+                        <p class="text-center">
+                            <strong>Inventory</strong>
+                        </p>
+                        <div class="progress-group">
+                            <span class="progress-text">Barley</span>
+                            <span id="barley" class="progress-number"><b>80</b>/100%</span>
+                            <div class="progress sm">
+                                <div id="barley-bar" class="progress-bar progress-bar-green" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="progress-group">
+                            <span class="progress-text">Hops</span>
+                            <span id="hops" class="progress-number"><b>80</b>/100%</span>
+                            <div class="progress sm">
+                                <div id="hops-bar" class="progress-bar progress-bar-green" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="progress-group">
+                            <span class="progress-text">Malt</span>
+                            <span id="Malt" class="progress-number"><b>80</b>/100%</span>
+                            <div class="progress sm">
+                                <div id="malt-bar" class="progress-bar progress-bar-green" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="progress-group">
+                            <span class="progress-text">Wheat</span>
+                            <span id="wheat" class="progress-number"><b>80</b>/100%</span>
+                            <div class="progress sm">
+                                <div id="wheat-bar" class="progress-bar progress-bar-green" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="progress-group">
+                            <span class="progress-text">Yeast</span>
+                            <span id="yeast" class="progress-number"><b>80</b>/100%</span>
+                            <div class="progress sm">
+                                <div id="yeast-bar" class="progress-bar progress-bar-green" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="progress-group">
+                            <span class="progress-text">Maintenance</span>
+                            <span id="maintenance" class="progress-number"><b>80</b>/100%</span>
+                            <div class="progress sm">
+                                <div id="maintenance-bar" class="progress-bar progress-bar-red" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <!-- /.progress-group
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+                </div><!-- ./box-body -->
+
+            </div><!-- /.box -->
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+    <div class="row">
+        <div class="col-md-4">
+            <div class="info-box">
+                <span class="info-box-icon bg-green">
+                    <i>
+                        <img class="match-block" src="~/Content/beerAssets/beer.svg" />
+                    </i>
+                </span>
+                <div class="info-box-content">
+                    <span class="info-box-text">Beer Type for next batch</span>
+                    <span class="info-box-number" id="nextType">Pilsner</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="info-box">
+                <span class="info-box-icon bg-aqua">
+                    <i>
+                        <img class="match-block" src="~/Content/beerAssets/beertap.svg" />
+                    </i>
+                </span>
+                <div class="info-box-content">
+                    <span class="info-box-text">Beer amount for next batch</span>
+                    <span class="info-box-number" id="nextAmt">10000</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="info-box">
+                <span class="info-box-icon bg-yellow">
+                    <i>
+                        <img class="match-block" src="~/Content/beerAssets/package.svg" />
+                    </i>
+                </span>
+                <div class="info-box-content">
+                    <span class="info-box-text">Next Batch ID</span>
+                    <span class="info-box-number" id="nextID">25</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .match-block {
+        display: block;
+        margin-left: auto;
+        margin-top: 10%;
+        margin-right: auto;
+        width: 80%;
+        vertical-align: middle;
+    }
+    .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        left: 0;
+        top: 50px;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+
+</style>
+
+<script src="~/Scripts/jquery.signalR-2.4.0.min.js"></script>
+<script src="~/signalr/hubs"></script>
+<script type="text/javascript">
+
+    var state;
+    var modal = document.getElementById("modal");
+
+
+
+        $(document).ready(function () {
+
+            getAllStats();
+
+            //setInterval(getProduced, 500);
+            //setInterval(getState, 500);
+
+        });
+
+
+    function getAllStats() {
+        $.ajax({
+            url: "/Dashboard/GetAllStats",
+            data: {},
+            success: function (data) {
+                $("#produced").text(data.prodProc);
+                $("#nextBatchID").text(data.batchId);
+                $("#nextProductAmount").text(data.prodProcAmt);
+                $("#machineSpeed").text(data.machSpeed);
+                $("#acceptableAmountProduced").text(data.prodProcG);
+                $("#unacceptableAmountProduced").text(data.prodProcB);
+                $("#temperature").text(data.temp);
+                $("#humidity").text(data.humidity);
+                $("#vibration").text(data.vibra);
+                updateState(data.currentState);
+                var percentageBarley = Math.round((data.barley / 35000) * 100);
+                    $("#barley").text(percentageBarley + "/100");
+                        $('#barley-bar').css('width', percentageBarley + '%');
+                var percentageHops = Math.round((data.hops / 35000) * 100);
+                    $("#hops").text(percentageHops + "/100");
+                        $('#hops-bar').css('width', percentageHops + '%');
+                var percentageMalt = Math.round((data.malt / 35000) * 100);
+                    $("#Malt").text(percentageMalt + "/100");
+                        $('#malt-bar').css('width', percentageMalt + '%');
+                var percentageWheat = Math.round((data.wheat / 35000) * 100);
+                    $("#wheat").text(percentageWheat + "/100");
+                        $('#wheat-bar').css('width', percentageWheat + '%');
+                var percentageYeast = Math.round((data.yeast / 35000) * 100);
+                    $("#yeast").text(percentageYeast + "/100");
+                        $('#yeast-bar').css('width', percentageYeast + '%');
+                var percentageMaintenance = Math.round((data.maintenance / 35000) * 100);
+                    $("#maintenance").text(percentageMaintenance + "/100");
+                        $('#maintenance-bar').css('width', percentageMaintenance + '%');
+            }
+        });
+    }
+
+
+    Plotly.d3.csv("https://raw.githubusercontent.com/plotly/datasets/master/finance-charts-apple.csv", function(err, rows){
+
+        function unpack(rows, key) {
+            return rows.map(function(row) { return row[key]; });
+        }
+
+
+        var trace1 = {
+            type: "scatter",
+            mode: "lines",
+            name: 'AAPL High',
+            x: unpack(rows, 'Date'),
+            y: unpack(rows, 'AAPL.High'),
+            line: {color: '#17BECF'}
+        }
+
+        var trace2 = {
+            type: "scatter",
+            mode: "lines",
+            name: 'AAPL Low',
+            x: unpack(rows, 'Date'),
+            y: unpack(rows, 'AAPL.Low'),
+            line: {color: '#7F7F7F'}
+        }
+
+        var data = [trace1,trace2];
+
+        var layout = {
+            margin: {
+                l: 50,
+                r: 50,
+                b: 50,
+                t: 50,
+                pad: 1
+            },
+            
+            xaxis: {
+                autorange: true,
+                range: ['2015-02-17', '2017-02-16'],
+                rangeselector: {buttons: [
+                    {
+                        count: 1,
+                        label: '1m',
+                        step: 'month',
+                        stepmode: 'backward'
+                    },
+                    {
+                        count: 6,
+                        label: '6m',
+                        step: 'month',
+                        stepmode: 'backward'
+                    },
+                    {step: 'all'}
+                ]},
+                rangeslider: {range: ['2015-02-17', '2017-02-16']},
+                type: 'date'
+            },
+            yaxis: {
+                autorange: true,
+                range: [86.8700008333, 138.870004167],
+                type: 'linear'
+            }
+        };
+
+        Plotly.newPlot('plotChart', data, layout);
+    })
+
+
+    $(document).on("click",
+        "#startBtn",
+        function() {
+        modal.style.display = "block";
+    });
+
+    $("#closeModal").click(function() {
+        modal.style.display = "none";
+        $("#beerSelector").val("Pilsner");
+        $("#amtSet").val(null);
+    });
+
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+            $("#beerSelector").val("Pilsner");
+            $("#amtSet").val(null);
+        }
+    }
+
+    $("#sendData").click(function ()
+    {
+        var amt = parseInt($("#amtSet").val());
+        var beerType = parseInt($("#beerSelector").find(":selected").attr("beer-data"));
+        var beerTypeName = $("#beerSelector").val();
+        var speed = parseInt($("#speed").val());
+        $.ajax({
+            url: "/Dashboard/StartNewBatch",
+            data: {
+                amt: amt,
+                beertypeId: beerType,
+                speed: speed
+            },
+            success: function (data) {
+                toastr.success("Batch Information has been send.")
+                $("#nextAmt").text(amt);
+                $("#nextType").text(beerTypeName);
+                $("#beerSelector").val("Pilsner");
+                $("#amtSet").val(null);
+                $("#speed").val(null);
+
+                modal.style.display = "none";
+                getAllStats();
+            },
+            error: function (data) {
+                toastr.error(data.responseText)
+            }
+        });
+    });
+
+    function updateState(data) {
+        debugger;
+        var clearBtn = '<button id="clearBtn" class="btn btn-block btn-info btn-lg">Clear</button>';
+        var resetBtn = '<button id="resetBtn" class="btn btn-block btn-primary btn-lg">Reset</button>';
+        var startBtn = '<button id="startBtn" class="btn btn-block btn-success btn-lg">New Batch</button>';
+
+        switch (data) {
+            case 0:
+                $("#stateShow").text("Deactivated");
+                $("#changingBtns").empty();
+                $("#changingBtns").append(resetBtn);
+                $('#changingBtns').prop('disabled', true);
+
+                break;
+            case 1:
+                $("#stateShow").text("Clearing");
+                $("#changingBtns").empty();
+                $("#changingBtns").append(resetBtn);
+                $('#changingBtns').prop('disabled', true);
+                break;
+            case 2:
+                $("#stateShow").text("Stopped");
+                $("#changingBtns").empty();
+                $("#changingBtns").append(resetBtn);
+                $('#changingBtns').prop('disabled', false);
+                break;
+            case 3:
+                $("#stateShow").text("Starting");
+                $("#changingBtns").empty();
+                $("#changingBtns").append(resetBtn);
+                $('#changingBtns').prop('disabled', true);
+                break;
+            case 4:
+                $("#stateShow").text("Idle");
+                $("#changingBtns").empty();
+                $("#changingBtns").append(startBtn);
+                $('#changingBtns').prop('disabled', false);
+                break;
+            case 5:
+                $("#stateShow").text("Suspended");
+                $("#changingBtns").empty();
+                $("#changingBtns").append(clearBtn);
+                $('#changingBtns').prop('disabled', true);
+                break;
+            case 6:
+                $("#stateShow").text("Execute");
+                $("#changingBtns").empty();
+                $('#changingBtns').prop('disabled', true);
+                break;
+            case 7:
+                $("#stateShow").text("Stopping");
+                $("#changingBtns").empty();
+                $("#changingBtns").append(resetBtn);
+                $('#changingBtns').prop('disabled', true);
+                break;
+            case 8:
+                $("#stateShow").text("Aborting");
+                $("#changingBtns").empty();
+                $("#changingBtns").append(clearBtn);
+                $('#changingBtns').prop('disabled', true);
+                break;
+            case 9:
+                $("#stateShow").text("Aborted");
+                $("#changingBtns").empty();
+                $("#changingBtns").append(clearBtn);
+                $('#changingBtns').prop('disabled', false);
+                break;
+            case 10:
+                $("#stateShow").text("Holding");
+                $("#changingBtns").empty();
+                $("#changingBtns").append(resetBtn);
+                $('#changingBtns').prop('disabled', true);
+                break;
+            case 11:
+                $("#stateShow").text("Held");
+                $("#changingBtns").empty();
+                $("#changingBtns").append(resetBtn);
+                $('#changingBtns').prop('disabled', true);
+                break;
+            case 15:
+                $("#stateShow").text("Resetting");
+                $("#changingBtns").empty();
+                $("#changingBtns").append(startBtn);
+                $('#changingBtns').prop('disabled', true);
+                break;
+            case 16:
+                $("#stateShow").text("Completing");
+                $("#changingBtns").empty();
+                $("#changingBtns").append(resetBtn);
+                $('#changingBtns').prop('disabled', true);
+                break;
+            case 17:
+                $("#stateShow").text("Complete");
+                $("#changingBtns").empty();
+                $("#changingBtns").append(resetBtn);
+                $('#changingBtns').prop('disabled', false);
+                break;
+            case 18:
+                $("#stateShow").text("Deactivating");
+                $("#changingBtns").empty();
+                $("#changingBtns").append(resetBtn);
+                $('#changingBtns').prop('disabled', true);
+                break;
+            case 19:
+                $("#stateShow").text("Activating");
+                $("#changingBtns").empty();
+                $("#changingBtns").append(resetBtn);
+                $('#changingBtns').prop('disabled', true);
+                break;
+        }
+    }
+
+    $(function () {
+        debugger;
+        var hub = $.connection.SubscriptionTicker;
+        var connection = $.hubConnection();
+        connection.logging = true;
+        connection.start();
+
+        hub.client.notifyAllUsers = function(message) {
+            toastr.info(message);
+        }
+
+        hub.client.updateState = function (data) {
+            updateState(data);
+        }
+        
+        hub.client.UpdateProdProc = function (data) {
+            $("#produced").text(data);
+            }
+
+        hub.client.UpdateBatchId = function (data) {
+            $("#batchID").text(data);
+        }
+
+        hub.client.UpdateAmtToProduce = function (data) {
+            $("#ProductAmount").text(data);
+        }
+
+        hub.client.UpdateSpeed = function (data) {
+            $("#machineSpeed").text(data);
+        }
+
+        hub.client.UpdateGoodProduced = function (data) {
+            $("#acceptableAmountProduced").text(data);
+        }
+
+        hub.client.UpdateBadProduced = function (data) {
+            $("#unacceptableAmountProduced").text(data);
+        }
+
+        hub.client.UpdateTemperature = function (data) {
+            $("#temperature").text(data);
+        }
+
+        hub.client.UpdateHumidity = function (data) {
+            $("#humidity").text(data);
+        }
+        hub.client.UpdateVibration = function (data) {
+            $("#vibration").text(data);
+        }
+        hub.client.UpdateBarley = function (data) {
+            var percentage = Math.round((data / 35000) * 100);
+
+            $("#barley").text(percentage + "/100");
+            $('#barley-bar').css('width', percentage + '%');
+        }
+
+        hub.client.UpdateHops = function (data) {
+            var percentage = Math.round((data / 35000) * 100);
+
+            $("#hops").text(percentage + "/100");
+            $('#hops-bar').css('width', percentage + '%');
+        }
+        hub.client.UpdateMalt = function (data) {
+            var percentage = Math.round((data / 35000) * 100);
+
+            $("#Malt").text(percentage + "/100");
+            $('#malt-bar').css('width', percentage + '%');
+        }
+
+        hub.client.UpdateWheat = function (data) {
+            var percentage = Math.round((data / 35000) * 100);
+
+            $("#wheat").text(percentage + "/100");
+            $('#wheat-bar').css('width', percentage + '%');
+        }
+        hub.client.UpdateYeast = function (data) {
+            var percentage = Math.round((data / 35000) * 100);
+
+            $("#yeast").text(percentage + "/100");
+            $('#yeast-bar').css('width', percentage + '%');
+        }
+        hub.client.updateMaintenance = function (data) {
+            var percentage = Math.round((data / 30000) * 100);
+
+            $("#maintenance").text(percentage + "/100");
+            $('#maintenance-bar').css('width', percentage + '%');
+        }
+
+        $.connection.hub.start().done(function () {
+            $.connection.hub.logging = true;
+            $.connection.hub.start();
+
+            function actionBtn(data) {
+
+                hub.server.BtnClick(data);
+            }
+
+            $(document).on("click",
+                "#resetBtn",
+                function() {
+
+                    actionBtn(1);
+                    getAllStats();
+                });
+
+            $(document).on("click",
+                "#stopBtn",
+                function() {
+
+                    actionBtn(3);
+                    getAllStats();
+
+                });
+            $(document).on("click",
+                "#abortBtn",
+                function() {
+
+                    actionBtn(4);
+                    getAllStats();
+
+                });
+            $(document).on("click",
+                "#clearBtn",
+                function() {
+
+                    actionBtn(5);
+                    getAllStats();
+
+                });
+
+        });
+    });
+ 
+</script>
