@@ -163,7 +163,7 @@
             </span>
             <div class="info-box-content">
                 <span class="info-box-text">Temperature</span>
-                <span id ="temperature" class="info-box-number">Loading...</span>
+                <span id="temperature" class="info-box-number">Loading...</span>
             </div><!-- /.info-box-content -->
         </div><!-- /.info-box -->
     </div><!-- /.col -->
@@ -172,7 +172,7 @@
             <span class="info-box-icon bg-gray"><i><img class="match-block" src="~/Content/beerAssets/humidity.png" /> </i></span>
             <div class="info-box-content">
                 <span class="info-box-text">Humidity</span>
-                <span id = "humidity" class="info-box-number">Loading...</span>
+                <span id="humidity" class="info-box-number">Loading...</span>
             </div><!-- /.info-box-content -->
         </div><!-- /.info-box -->
     </div><!-- /.col -->
@@ -183,10 +183,54 @@
             <span class="info-box-icon bg-green"><i><img class="match-block" src="~/Content/beerAssets/vibration.svg" /></i></span>
             <div class="info-box-content">
                 <span class="info-box-text">Vibration</span>
-                <span id ="vibration" class="info-box-number">Loading...</span>
+                <span id="vibration" class="info-box-number">Loading...</span>
             </div><!-- /.info-box-content -->
         </div><!-- /.info-box -->
     </div><!-- /.col -->
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="info-box">
+                <span class="info-box-icon bg-green">
+                    <i>
+                        <img class="match-block" src="~/Content/beerAssets/beer.svg" />
+                    </i>
+                </span>
+                <div class="info-box-content">
+                    <span class="info-box-text">Beer Type for next batch</span>
+                    <span class="info-box-number" id="nextType">Pilsner</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="info-box">
+                <span class="info-box-icon bg-aqua">
+                    <i>
+                        <img class="match-block" src="~/Content/beerAssets/beertap.svg" />
+                    </i>
+                </span>
+                <div class="info-box-content">
+                    <span class="info-box-text">Beer amount for next batch</span>
+                    <span class="info-box-number" id="nextAmt">10000</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="info-box">
+                <span class="info-box-icon bg-yellow">
+                    <i>
+                        <img class="match-block" src="~/Content/beerAssets/package.svg" />
+                    </i>
+                </span>
+                <div class="info-box-content">
+                    <span class="info-box-text">Next Batch ID</span>
+                    <span class="info-box-number" id="nextID">25</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 </div><!-- /.row -->
 <!-- Main row -->
 <div class="row">
@@ -249,47 +293,6 @@
             </div><!-- /.box -->
         </div><!-- /.col -->
     </div><!-- /.row -->
-    <div class="row">
-        <div class="col-md-4">
-            <div class="info-box">
-                <span class="info-box-icon bg-green">
-                    <i>
-                        <img class="match-block" src="~/Content/beerAssets/beer.svg" />
-                    </i>
-                </span>
-                <div class="info-box-content">
-                    <span class="info-box-text">Beer Type for next batch</span>
-                    <span class="info-box-number" id="nextType">Pilsner</span>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="info-box">
-                <span class="info-box-icon bg-aqua">
-                    <i>
-                        <img class="match-block" src="~/Content/beerAssets/beertap.svg" />
-                    </i>
-                </span>
-                <div class="info-box-content">
-                    <span class="info-box-text">Beer amount for next batch</span>
-                    <span class="info-box-number" id="nextAmt">10000</span>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="info-box">
-                <span class="info-box-icon bg-yellow">
-                    <i>
-                        <img class="match-block" src="~/Content/beerAssets/package.svg" />
-                    </i>
-                </span>
-                <div class="info-box-content">
-                    <span class="info-box-text">Next Batch ID</span>
-                    <span class="info-box-number" id="nextID">25</span>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 
 <style>

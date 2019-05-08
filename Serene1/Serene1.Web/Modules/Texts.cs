@@ -59,7 +59,7 @@ namespace Serene1
                     public static LocalText FormTitle = "Welcome to BeerCraft";
                     public static LocalText SignInButton = "Sign In";
                     public static LocalText ForgotPassword = "Forgot password?";
-                    public static LocalText SignUpButton = "Register a new account";
+                    public static LocalText SignUpButton = "";
                     public static LocalText RememberMe = "Remember Me";
                     public static LocalText OR = "OR";
                     public static LocalText FacebookButton = "Sign in using Facebook";
