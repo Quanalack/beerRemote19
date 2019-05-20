@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Command control";
+    ViewData["Title"] = "Dashboard";
 }
 
 @section Head {
@@ -91,7 +91,7 @@
             <div class="info-box-content">
                 <span class="info-box-text">Batch Id</span>
 
-                <span id="nextBatchID" class="info-box-number"> Loading... </span>
+                <span id="nextBatchID" class="info-box-number"> XX </span>
             </div><!-- /.info-box-content -->
         </div><!-- /.info-box -->
     </div><!-- /.col -->
@@ -100,7 +100,7 @@
             <span class="info-box-icon bg-gray"><i><img class="match-block" src="~/Content/beerAssets/beertap.svg" /> </i></span>
             <div class="info-box-content">
                 <span class="info-box-text">Amount to Produce</span>
-                <span id="nextProductAmount" class="info-box-number">Loading...</span>
+                <span id="nextProductAmount" class="info-box-number">XX</span>
             </div><!-- /.info-box-content -->
         </div><!-- /.info-box -->
     </div><!-- /.col -->
@@ -111,7 +111,7 @@
             <span class="info-box-icon bg-green"><i><img class="match-block" src="~/Content/beerAssets/speedometer.svg" /></i></span>
             <div class="info-box-content">
                 <span class="info-box-text">Speed</span>
-                <span id ="machineSpeed" class="info-box-number">Loading...</span>
+                <span id ="machineSpeed" class="info-box-number">XX</span>
             </div><!-- /.info-box-content -->
         </div><!-- /.info-box -->
     </div><!-- /.col -->
@@ -127,7 +127,7 @@
             </span>
             <div class="info-box-content">
                 <span class="info-box-text">Produced</span>
-                <span id="produced" class="info-box-number">Loading...</span>
+                <span id="produced" class="info-box-number">XX</span>
             </div><!-- /.info-box-content -->
         </div><!-- /.info-box -->
     </div><!-- /.col -->
@@ -136,7 +136,7 @@
             <span class="info-box-icon bg-gray"><i><img style="display: block; margin-left: auto; margin-top: 10%; margin-right: auto; height:72px; width: auto; vertical-align: middle;" src="~/Content/beerAssets/accept.svg" /> </i></span>
             <div class="info-box-content">
                 <span class="info-box-text">Acceptable Amount Produced</span>
-                <span id ="acceptableAmountProduced" class="info-box-number">Loading...</span>
+                <span id ="acceptableAmountProduced" class="info-box-number">XX</span>
             </div><!-- /.info-box-content -->
         </div><!-- /.info-box -->
     </div><!-- /.col -->
@@ -147,7 +147,7 @@
             <span class="info-box-icon bg-bg-gray"><i><img style="display: block;margin-left: auto;margin-top: 10%;margin-right: auto;height:72px; width: auto; vertical-align: middle;" src="~/Content/beerAssets/defect.svg" /></i></span>
             <div class="info-box-content">
                 <span class="info-box-text">Unacceptable Amount Produced</span>
-                <span id ="unacceptableAmountProduced"class="info-box-number">Loading...</span>
+                <span id ="unacceptableAmountProduced"class="info-box-number">XX</span>
             </div><!-- /.info-box-content -->
         </div><!-- /.info-box -->
     </div><!-- /.col -->
@@ -163,7 +163,7 @@
             </span>
             <div class="info-box-content">
                 <span class="info-box-text">Temperature</span>
-                <span id="temperature" class="info-box-number">Loading...</span>
+                <span id ="temperature" class="info-box-number">XX</span>
             </div><!-- /.info-box-content -->
         </div><!-- /.info-box -->
     </div><!-- /.col -->
@@ -172,7 +172,7 @@
             <span class="info-box-icon bg-gray"><i><img class="match-block" src="~/Content/beerAssets/humidity.png" /> </i></span>
             <div class="info-box-content">
                 <span class="info-box-text">Humidity</span>
-                <span id="humidity" class="info-box-number">Loading...</span>
+                <span id = "humidity" class="info-box-number">XX</span>
             </div><!-- /.info-box-content -->
         </div><!-- /.info-box -->
     </div><!-- /.col -->
@@ -183,11 +183,94 @@
             <span class="info-box-icon bg-green"><i><img class="match-block" src="~/Content/beerAssets/vibration.svg" /></i></span>
             <div class="info-box-content">
                 <span class="info-box-text">Vibration</span>
-                <span id="vibration" class="info-box-number">Loading...</span>
+                <span id ="vibration" class="info-box-number">XX</span>
             </div><!-- /.info-box-content -->
         </div><!-- /.info-box -->
     </div><!-- /.col -->
+</div><!-- /.row -->
+<!-- Main row -->
+<div class="row">
+    <div class="col-md-12">
+        <div class="box">
+            <div class="box-header with-border">
+                <h3 class="box-title">Monthly Recap Report</h3>
+                <div class="box-tools pull-right">
+                    <button class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                    <div class="btn-group">
+                        <button class="btn btn-box-tool dropdown-toggle" data-toggle="dropdown"><i class="fa fa-wrench"></i></button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="#">Action</a></li>
+                            <li><a href="#">Another action</a></li>
+                            <li><a href="#">Something else here</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#">Separated link</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div><!-- /.box-header -->
+            <div class="box-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <p class="text-center">
+                            <strong>Sales: 1 Jan, 2014 - 30 Jul, 2014</strong>
+                        </p>
+                        <!-- Sales Chart Canvas -->
+                        <div id="plotChart"></div>
+                    </div><!-- /.col -->
+                    <div class="col-md-4">
+                        <p class="text-center">
+                            <strong>Inventory</strong>
+                        </p>
+                        <div class="progress-group">
+                            <span class="progress-text">Barley</span>
+                            <span id="barley" class="progress-number"><b>80</b>/100%</span>
+                            <div class="progress sm">
+                                <div id="barley-bar" class="progress-bar progress-bar-green" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="progress-group">
+                            <span class="progress-text">Hops</span>
+                            <span id="hops" class="progress-number"><b>80</b>/100%</span>
+                            <div class="progress sm">
+                                <div id="hops-bar" class="progress-bar progress-bar-green" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="progress-group">
+                            <span class="progress-text">Malt</span>
+                            <span id="Malt" class="progress-number"><b>80</b>/100%</span>
+                            <div class="progress sm">
+                                <div id="malt-bar" class="progress-bar progress-bar-green" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="progress-group">
+                            <span class="progress-text">Wheat</span>
+                            <span id="wheat" class="progress-number"><b>80</b>/100%</span>
+                            <div class="progress sm">
+                                <div id="wheat-bar" class="progress-bar progress-bar-green" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="progress-group">
+                            <span class="progress-text">Yeast</span>
+                            <span id="yeast" class="progress-number"><b>80</b>/100%</span>
+                            <div class="progress sm">
+                                <div id="yeast-bar" class="progress-bar progress-bar-green" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="progress-group">
+                            <span class="progress-text">Maintenance</span>
+                            <span id="maintenance" class="progress-number"><b>80</b>/100%</span>
+                            <div class="progress sm">
+                                <div id="maintenance-bar" class="progress-bar progress-bar-red" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <!-- /.progress-group
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+                </div><!-- ./box-body -->
 
+            </div><!-- /.box -->
+        </div><!-- /.col -->
+    </div><!-- /.row -->
     <div class="row">
         <div class="col-md-4">
             <div class="info-box">
@@ -229,70 +312,6 @@
             </div>
         </div>
     </div>
-
-
-</div><!-- /.row -->
-<!-- Main row -->
-<div class="row">
-    <div class="col-md-12">
-                <div class="row">
-                    <div class="col-md-8">
-
-                    </div><!-- /.col -->
-                    <div class="col-md-5">
-                        <p class="text-center">
-                            <strong>Inventory</strong>
-                        </p>
-                        <div class="progress-group">
-                            <span class="progress-text">Barley</span>
-                            <span id="barley" class="progress-number"><b>80</b>/100%</span>
-                            <div class="progress sm">
-                                <div id="barley-bar" class="progress-bar progress-bar-green" style="width: 100%"></div>
-                            </div>
-                        </div>
-                        <div class="progress-group">
-                            <span class="progress-text">Hops</span>
-                            <span id="hops" class="progress-number"><b>80</b>/100%</span>
-                            <div class="progress sm">
-                                <div id="hops-bar" class="progress-bar progress-bar-green" style="width: 100%"></div>
-                            </div>
-                        </div>
-                        <div class="progress-group">
-                            <span class="progress-text">Malt</span>
-                            <span id="Malt" class="progress-number"><b>80</b>/100%</span>
-                            <div class="progress sm">
-                                <div id="malt-bar" class="progress-bar progress-bar-green" style="width: 100%"></div>
-                            </div>
-                        </div>
-                        <div class="progress-group">
-                            <span class="progress-text">Wheat</span>
-                            <span id="wheat" class="progress-number"><b>80</b>/100%</span>
-                            <div class="progress sm">
-                                <div id="wheat-bar" class="progress-bar progress-bar-green" style="width: 100%"></div>
-                            </div>
-                        </div>
-                        <div class="progress-group">
-                            <span class="progress-text">Yeast</span>
-                            <span id="yeast" class="progress-number"><b>80</b>/100%</span>
-                            <div class="progress sm">
-                                <div id="yeast-bar" class="progress-bar progress-bar-green" style="width: 100%"></div>
-                            </div>
-                        </div>
-                        <div class="progress-group">
-                            <span class="progress-text">Maintenance</span>
-                            <span id="maintenance" class="progress-number"><b>80</b>/100%</span>
-                            <div class="progress sm">
-                                <div id="maintenance-bar" class="progress-bar progress-bar-red" style="width: 100%"></div>
-                            </div>
-                        </div>
-                        <!-- /.progress-group
-                        </div><!-- /.col -->
-                    </div><!-- /.row -->
-                </div><!-- ./box-body -->
-
-            </div><!-- /.box -->
-        </div><!-- /.col -->
-    </div><!-- /.row -->
 </div>
 
 <style>
@@ -440,6 +459,7 @@
             }
         };
 
+        Plotly.newPlot('plotChart', data, layout);
     })
 
 

@@ -24,7 +24,7 @@ namespace BeerProduction.OPC
             () => new Opc(GlobalHost.ConnectionManager.GetHubContext<SubscriptionHub>().Clients));
 
         public UaApp UaApp1;
-        private static string Url = "opc.tcp://10.112.254.165:4840";
+        private static string Url = "opc.tcp://10.112.254.69:4840";
         private UaApplication app;
 
         private static UnitofWork _uow = new UnitofWork();
@@ -65,7 +65,6 @@ namespace BeerProduction.OPC
         }
 
         [Subscription(endpointUrl: "opc.tcp://10.112.254.69:4840", publishingInterval: -1)]
-
         public class UaApp : SubscriptionBase
         {
             private UaApplication App;
