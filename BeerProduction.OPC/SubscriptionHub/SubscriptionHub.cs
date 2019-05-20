@@ -14,11 +14,26 @@ namespace Serene1.SubscriptionHub
     public class SubscriptionHub : Hub
     {
         //private Opc _opc;
-        
+
         //public SubscriptionHub() :
         //    this(Opc.Instance)
         //{
         //}
+
+        public void Hello()
+        {
+            Clients.All.hello();
+        }
+        public void Hello(string message)
+        {
+            Clients.All.notifyAllUsers(message);
+        }
+
+        [HubMethodName("BtnClick")]
+        public void BtnClick(int data)
+        {
+            Opc.Instance.UaApp1.ButtonClick(data);
+        }
 
         public SubscriptionHub(/*Opc opc*/)
         {
